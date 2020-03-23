@@ -170,10 +170,37 @@ void classa_enter()
   /* Request permission to enter the office.  You might also want to add  */
   /* synchronization for the simulations variables below                  */
   /*  YOUR CODE HERE.                                                     */ 
-
-  students_in_office += 1;
-  students_since_break += 1;
-  classa_inoffice += 1;
+ int flag=0, flag1=0;
+  while(!flag1)
+  {
+  pthread_mutex_lock(&mutex);
+  waiting_A +=1;
+  if(students_in_office < MAX_SEATS)
+   {
+    if(consecutiveA<5 || waiting_B ==0)
+    {
+    if(classb_inoffice==0)
+     {
+      flag=1;
+     }
+    }
+   }
+    if(flag==1)
+    {
+    waiting_A -=1;
+    consecutiveA +=1;
+    consecutiveB =0;
+    students_in_office +=1;
+    students_since_break +=1;
+    classa_inoffice +=1;
+      flag1=1;
+    }
+    pthread_mutex_unlock(&mutex);
+  }
+  if(flag1==1)
+  {
+  sem_wait(&semaphore);
+  }
 
 }
 
@@ -188,12 +215,37 @@ void classb_enter()
   /* Request permission to enter the office.  You might also want to add  */
   /* synchronization for the simulations variables below                  */
   /*  YOUR CODE HERE.                                                     */ 
-
-
-  students_in_office += 1;
-  students_since_break += 1;
-  classb_inoffice += 1;
-
+  int flag=0, flag1=0;
+  while(!flag1)
+  {
+  pthread_mutex_lock(&mutex);
+  waiting_B +=1;
+  if(students_in_office < MAX_SEATS)
+   {
+    if(consecutiveB<5 || waiting_A ==0)
+    {
+    if(classa_inoffice==0)
+     {
+      flag=1;
+     }
+    }
+   }
+    if(flag==1)
+    {
+    waiting_B -=1;
+    consecutiveB +=1;
+    consecutiveA =0;
+    students_in_office +=1;
+    students_since_break +=1;
+    classb_inoffice +=1;
+      flag1=1;
+    }
+    pthread_mutex_unlock(&mutex);
+  }
+  if(flag1==1)
+  {
+  sem_wait(&semaphore);
+  }
 }
 
 /* Code executed by a student to simulate the time he spends in the office asking questions
@@ -215,9 +267,11 @@ static void classa_leave()
    *  TODO
    *  YOUR CODE HERE. 
    */
-
+  pthread_mutex_lock(&mutex);
   students_in_office -= 1;
   classa_inoffice -= 1;
+  pthread_mutex_unlock(&mutex);
+  sem_post(&semaphore);
 
 }
 
@@ -231,10 +285,11 @@ static void classb_leave()
    * TODO
    * YOUR CODE HERE. 
    */
-
+  pthread_mutex_lock(&mutex);
   students_in_office -= 1;
   classb_inoffice -= 1;
-
+  pthread_mutex_unlock(&mutex);
+  sem_post(&semaphore);
 }
 
 /* Main code for class A student threads.  
