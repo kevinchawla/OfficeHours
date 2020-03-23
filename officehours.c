@@ -72,8 +72,8 @@ typedef struct
 
 static int initialize(student_info *si, char *filename);
 static void take_break();
-static void askQuestions(int t);
-void *professorThread(void *junk);
+static void ask_questions(int t);
+void *professorthread(void *junk);
 void classa_enter();
 void classb_enter();
 static void classa_leave();
