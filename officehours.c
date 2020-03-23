@@ -53,6 +53,13 @@ static int students_in_office;   /* Total numbers of students currently in the o
 static int classa_inoffice;      /* Total numbers of students from class A currently in the office */
 static int classb_inoffice;      /* Total numbers of students from class B in the office */
 static int students_since_break = 0;
+static int consecutiveA=0;
+static int consecutiveB=0;
+static int waiting_A=0;
+static int waiting_B=0;
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+sem_t semaphore;
 
 
 typedef struct 
@@ -62,6 +69,17 @@ typedef struct
   int student_id;
   int class;
 } student_info;
+
+static int initialize(student_info *si, char *filename);
+static void take_break();
+static void askQuestions(int t);
+void *professorThread(void *junk);
+void classa_enter();
+void classb_enter();
+static void classa_leave();
+static void classb_leave();
+void* classa_student(void *si);
+void* classb_student(void *si);
 
 /* Called at beginning of simulation.  
  * TODO: Create/initialize all synchronization
@@ -94,7 +112,7 @@ static int initialize(student_info *si, char *filename)
   {
     i++;
   }
-
+ sem_init(&semaphore, 0, MAX_SEATS);
  fclose(fp);
  return i;
 }
@@ -120,6 +138,12 @@ void *professorthread(void *junk)
   /* Loop while waiting for students to arrive. */
   while (1) 
   {
+    pthread_mutex_lock(&mutex);
+    if(students_in_office == 0 && students_since_break >=10)
+    {
+    take_break(); 
+    }
+    pthread_mutex_unlock(&mutex);
 
     /* TODO */
     /* Add code here to handle the student's request.             */
