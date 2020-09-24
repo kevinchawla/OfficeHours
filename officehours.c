@@ -39,14 +39,12 @@
 #define CLASSD 3
 #define CLASSE 4
 
-/* TODO */
-/* Add your synchronization variables here */
+
+/* Adding synchronization variables here */
 
 /* Basic information about simulation.  They are printed/checked at the end 
  * and in assert statements during execution.
- *
- * You are responsible for maintaining the integrity of these variables in the 
- * code that you develop. 
+ * 
  */
 
 static int students_in_office;   /* Total numbers of students currently in the office */
@@ -82,7 +80,7 @@ void* classa_student(void *si);
 void* classb_student(void *si);
 
 /* Called at beginning of simulation.  
- * TODO: Create/initialize all synchronization
+ * Create/initialize all synchronization
  * variables and other global variables that you add.
  */
 static int initialize(student_info *si, char *filename) 
@@ -92,8 +90,7 @@ static int initialize(student_info *si, char *filename)
   classb_inoffice = 0;
   students_since_break = 0;
 
-  /* Initialize your synchronization variables (and 
-   * other variables you might use) here
+  /* Initialize  synchronization variables here
    */
 
 
@@ -118,7 +115,6 @@ static int initialize(student_info *si, char *filename)
 }
 
 /* Code executed by professor to simulate taking a break 
- * You do not need to add anything here.  
  */
 static void take_break() 
 {
@@ -128,9 +124,7 @@ static void take_break()
   students_since_break = 0;
 }
 
-/* Code for the professor thread. This is fully implemented except for synchronization
- * with the students.  See the comments within the function for details.
- */
+/* Code for the professor thread.*/
 void *professorthread(void *junk) 
 {
   printf("The professor arrived and is starting his office hours\n");
@@ -145,31 +139,18 @@ void *professorthread(void *junk)
     }
     pthread_mutex_unlock(&mutex);
 
-    /* TODO */
-    /* Add code here to handle the student's request.             */
-    /* Currently the body of the loop is empty. There's           */
-    /* no communication between professor and students, i.e. all  */
-    /* students are admitted without regard of the number         */ 
-    /* of available seats, which class a student is in,           */
-    /* and whether the professor needs a break. You need to add   */
-    /* all of this.                                               */
-
   }
   pthread_exit(NULL);
 }
 
 
-/* Code executed by a class A student to enter the office.
- * You have to implement this.  Do not delete the assert() statements,
- * but feel free to add your own.
+/* Code executed by a class A student to enter the office. 
  */
 void classa_enter() 
 {
 
-  /* TODO */
-  /* Request permission to enter the office.  You might also want to add  */
-  /* synchronization for the simulations variables below                  */
-  /*  YOUR CODE HERE.                                                     */ 
+  
+  /* Request permission to enter the office. */ 
  int flag=0, flag1=0;
   while(!flag1)
   {
@@ -205,16 +186,12 @@ void classa_enter()
 }
 
 /* Code executed by a class B student to enter the office.
- * You have to implement this.  Do not delete the assert() statements,
- * but feel free to add your own.
  */
 void classb_enter() 
 {
 
-  /* TODO */
-  /* Request permission to enter the office.  You might also want to add  */
-  /* synchronization for the simulations variables below                  */
-  /*  YOUR CODE HERE.                                                     */ 
+  
+  /* Request permission to enter the office.  */ 
   int flag=0, flag1=0;
   while(!flag1)
   {
@@ -249,7 +226,7 @@ void classb_enter()
 }
 
 /* Code executed by a student to simulate the time he spends in the office asking questions
- * You do not need to add anything here.  
+ 
  */
 static void ask_questions(int t) 
 {
@@ -258,15 +235,11 @@ static void ask_questions(int t)
 
 
 /* Code executed by a class A student when leaving the office.
- * You need to implement this.  Do not delete the assert() statements,
- * but feel free to add as many of your own as you like.
+ 
  */
 static void classa_leave() 
 {
-  /* 
-   *  TODO
-   *  YOUR CODE HERE. 
-   */
+  
   pthread_mutex_lock(&mutex);
   students_in_office -= 1;
   classa_inoffice -= 1;
@@ -276,15 +249,11 @@ static void classa_leave()
 }
 
 /* Code executed by a class B student when leaving the office.
- * You need to implement this.  Do not delete the assert() statements,
- * but feel free to add as many of your own as you like.
+ 
  */
 static void classb_leave() 
 {
-  /* 
-   * TODO
-   * YOUR CODE HERE. 
-   */
+  
   pthread_mutex_lock(&mutex);
   students_in_office -= 1;
   classb_inoffice -= 1;
@@ -293,8 +262,6 @@ static void classb_leave()
 }
 
 /* Main code for class A student threads.  
- * You do not need to change anything here, but you can add
- * debug statements to help you during development/debugging.
  */
 void* classa_student(void *si) 
 {
@@ -328,8 +295,6 @@ void* classa_student(void *si)
 }
 
 /* Main code for class B student threads.
- * You do not need to change anything here, but you can add
- * debug statements to help you during development/debugging.
  */
 void* classb_student(void *si) 
 {
